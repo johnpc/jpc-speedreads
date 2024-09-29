@@ -5,5 +5,9 @@
 *.txt
 *.svg
 *.png
+*.webp
+*.tsbuildinfo
+ios/
 .amplify/
 .husky/
+dist/

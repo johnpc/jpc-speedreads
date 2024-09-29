@@ -4,11 +4,13 @@ import {
   Divider,
   Heading,
   Loader,
+  Text,
   useTheme,
 } from "@aws-amplify/ui-react";
 import { generateClient } from "aws-amplify/data";
 import type { Schema } from "../../amplify/data/resource";
 import { ChapterObject } from "../utils/types";
+import { ArrowBack } from "@mui/icons-material";
 const client = generateClient<Schema>();
 
 export default function SelectChapter(props: {
@@ -49,17 +51,32 @@ export default function SelectChapter(props: {
   if (loading)
     return (
       <>
-        <Heading>Downloading book (this could take a while)</Heading>
+        <Heading color={tokens.colors.overlay[30]}>Downloading book (this could take a while)</Heading>
         <Loader variation="linear" />
       </>
     );
   return (
     <>
-      <Heading marginBottom={tokens.space.medium} level={5}>
-        Chapters for {props.epubFileName}
+      <Button
+              colorTheme="overlay"
+
+        display={"block"}
+        margin={tokens.space.xs}
+        variation="link"
+        onClick={props.unsetEpubFileName}
+      >
+        <ArrowBack />
+      </Button>
+      <Text marginBottom={tokens.space.xs} color={tokens.colors.overlay[30]}>
+        {props.epubFileName}
+      </Text>
+      <Heading color={tokens.colors.overlay[70]} marginBottom={tokens.space.xs} level={5}>
+        Chapters
       </Heading>
       {chapters.map((chapter) => (
         <Button
+        colorTheme="overlay"
+        color={tokens.colors.overlay[50]}
           margin={tokens.space.xxxs}
           size="large"
           isFullWidth
@@ -74,7 +91,6 @@ export default function SelectChapter(props: {
         marginBottom={tokens.space.medium}
         orientation="horizontal"
       />
-      <Button onClick={props.unsetEpubFileName}>Back</Button>
     </>
   );
 }

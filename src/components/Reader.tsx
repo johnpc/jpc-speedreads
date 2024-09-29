@@ -7,13 +7,22 @@ import {
   Text,
   useTheme,
 } from "@aws-amplify/ui-react";
-import { PlayArrow, PauseCircle } from "@mui/icons-material";
+import {
+  PlayArrow,
+  PauseCircle,
+  FastForward,
+  FastRewind,
+  Undo,
+  Redo,
+  ArrowBack,
+} from "@mui/icons-material";
 import { ChapterObject } from "../utils/types";
 
 export default function Reader(props: {
   epubFileName: string;
   chapter: ChapterObject;
   unsetChapter: () => void;
+  setNextChapter: () => void;
   unsetEpubFileName: () => void;
 }) {
   const { tokens } = useTheme();
@@ -44,13 +53,14 @@ export default function Reader(props: {
       if (wordIndex >= length) setPaused(true);
     }, 1000 / wordsPerSecond);
     return () => clearInterval(interval);
-  }, [wordIndex, length, wordsPerSecond, paused]);
+  }, [wordIndex, length, wordsPerSecond, paused, wordIndexCacheKey, props]);
 
   const handleResetToBeginningOfChapter = () => {
     const shouldReset = confirm(
       "Are you sure you want to reset to the beginning of the chapter?"
     );
     if (shouldReset) {
+      localStorage.setItem(wordIndexCacheKey, "0");
       setWordIndex(0);
     }
   };
@@ -60,81 +70,122 @@ export default function Reader(props: {
     setWordsPerSecond(wps);
   };
 
+  const handleSetWordIndex = (index: number) => {
+    localStorage.setItem(wordIndexCacheKey, index.toFixed());
+    if (index < 0) index = 0;
+    setWordIndex(index);
+  };
+
   return (
     <>
-      <Heading level={6} marginBottom={tokens.space.xl}>
+      <Button
+      color={tokens.colors.overlay[70]}
+        display={"block"}
+        margin={tokens.space.xs}
+        variation="link"
+        colorTheme="overlay"
+        onClick={props.unsetChapter}
+      >
+        <ArrowBack />
+      </Button>
+      <Text marginBottom={tokens.space.xs} color={tokens.colors.overlay[30]}>
+        {" "}
         {props.epubFileName}: {props.chapter.meta.title}
-      </Heading>
-      <Heading level={1} margin={tokens.space.large}>
+      </Text>
+
+      <Heading color={tokens.colors.overlay[80]} level={1} margin={tokens.space.large}>
         {wordToShow}
       </Heading>
       <Button
+
+              color={tokens.colors.overlay[50]}
+
+        colorTheme="overlay"
         marginRight={tokens.space.small}
         onClick={() => setPaused(!paused)}
       >
         {paused ? <PlayArrow /> : <PauseCircle />}
       </Button>
       <Divider
+        color={tokens.colors.overlay[30]}
         marginTop={tokens.space.small}
         marginBottom={tokens.space.small}
         orientation="horizontal"
       />
-      <Text>
+      <Text color={tokens.colors.overlay[30]}>
         Length is {length} words. Read time is {(duration / 60).toFixed(1)}{" "}
         minutes. Time remaining is{" "}
         {((length - wordIndex) / wordsPerSecond / 60).toFixed(1)} minutes
       </Text>
+      <Heading color={tokens.colors.overlay[30]} marginBottom={tokens.space.small}>
+        ({wordsPerSecond} words per second)
+      </Heading>
       <Button
-        margin={tokens.space.small}
+        colorTheme="overlay"
+        color={tokens.colors.overlay[50]}
+        margin={tokens.space.xxxs}
+        onClick={() => handleSetWordIndex(wordIndex - 10)}
+      >
+        <Undo />
+      </Button>
+      <Button
+        colorTheme="overlay"
+        color={tokens.colors.overlay[50]}
+        margin={tokens.space.xxxs}
         onClick={() => handleSetWordsPerSecond(wordsPerSecond - 1)}
       >
-        Slower
+        <FastRewind />
       </Button>
       <Button
-        margin={tokens.space.small}
+        colorTheme="overlay"
+        color={tokens.colors.overlay[50]}
+        margin={tokens.space.xxxs}
         onClick={() => handleSetWordsPerSecond(wordsPerSecond + 1)}
       >
-        Faster
+        <FastForward />
+      </Button>
+      <Button
+        colorTheme="overlay"
+        color={tokens.colors.overlay[50]}
+        margin={tokens.space.xxxs}
+        onClick={() => handleSetWordIndex(wordIndex + 10)}
+      >
+        <Redo />
       </Button>
       <Loader
+        filledColor={tokens.colors.overlay[30]}
         variation="linear"
+        marginTop={tokens.space.medium}
         marginBottom={tokens.space.medium}
         percentage={Math.min(
           parseFloat(((wordIndex / length) * 100).toFixed(2)),
           100
         )}
+        isPercentageTextHidden
         isDeterminate
       />
-      <Text>
+      <Text color={tokens.colors.overlay[30]}>
         Word {wordIndex} of {length}
       </Text>
       <Button
+        colorTheme="overlay"
+        marginTop={tokens.space.xxxs}
+        isFullWidth
+        onClick={() => {
+          props.setNextChapter();
+          setWordIndex(0);
+        }}
+      >
+        <Text color={tokens.colors.overlay[30]}>Next Chapter</Text>
+      </Button>
+      <Button
+        colorTheme="overlay"
         marginTop={tokens.space.small}
         isFullWidth
         variation="warning"
         onClick={handleResetToBeginningOfChapter}
       >
         Reset To Beginning of Chapter
-      </Button>
-      <Divider marginTop={tokens.space.medium} orientation="horizontal" />
-      <Button
-        margin={tokens.space.xxxs}
-        isFullWidth
-        variation="destructive"
-        onClick={props.unsetChapter}
-      >
-        Back to Chapter List
-      </Button>
-      <Button
-        margin={tokens.space.xxxs}
-        isFullWidth
-        variation="destructive"
-        onClick={() => {
-          props.unsetChapter();
-          props.unsetEpubFileName();
-        }}
-      >
-        Switch Books
       </Button>
     </>
   );

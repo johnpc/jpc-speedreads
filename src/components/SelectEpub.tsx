@@ -33,7 +33,7 @@ export default function SelectEpub(props: {
   if (loading)
     return (
       <>
-        <Heading>
+        <Heading color={tokens.colors.overlay[30]}>
           Searching for available books (this could take a while)
         </Heading>
         <Loader variation="linear" />
@@ -41,7 +41,7 @@ export default function SelectEpub(props: {
     );
   return (
     <>
-      <Heading level={1}>Available Books</Heading>
+      <Heading level={1} color={tokens.colors.overlay[70]}>Available Books</Heading>
       <Divider
         marginTop={tokens.space.small}
         marginBottom={tokens.space.small}
@@ -49,6 +49,8 @@ export default function SelectEpub(props: {
       />
       {epubFileNames?.map((epubFileName) => (
         <Button
+        colorTheme="overlay"
+        color={tokens.colors.overlay[50]}
           margin={tokens.space.xxxs}
           size="large"
           isFullWidth
