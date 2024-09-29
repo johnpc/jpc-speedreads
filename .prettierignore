@@ -1,0 +1,9 @@
+.prettierignore
+.gitignore
+.eslintcache
+*.epub
+*.txt
+*.svg
+*.png
+.amplify/
+.husky/

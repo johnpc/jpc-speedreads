@@ -1,0 +1,65 @@
+{
+  "name": "jpc-speedreads",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "sandbox": "ampx sandbox --profile personal",
+    "uploadEpubFile": "aws s3 --profile personal cp $EPUB_PATH s3://$(cat amplify_outputs.json | jq -r .storage.bucket_name)/epubs/$EPUB_PATH",
+    "prod-config": "ampx generate outputs --app-id d2rudzu89vig5p --branch main --profile personal",
+    "ios": "npm run prod-config && npm run dev-ios",
+    "dev-ios": "npm run build && cap sync && cap copy ios && cap open ios",
+    "prepare": "husky install"
+  },
+  "dependencies": {
+    "@aws-amplify/ui-react": "^6.5.1",
+    "@capacitor/core": "^6.1.2",
+    "@capacitor/ios": "^6.1.2",
+    "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^6.1.1",
+    "aws-amplify": "^6.6.2",
+    "epub": "^1.2.1",
+    "html-to-text": "^9.0.5",
+    "node-html-parser": "^6.1.13",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@aws-amplify/backend": "^1.3.0",
+    "@aws-amplify/backend-cli": "^1.2.8",
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^6.1.2",
+    "@eslint/js": "^9.9.0",
+    "@types/html-to-text": "^9.0.4",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "aws-cdk": "^2.160.0",
+    "aws-cdk-lib": "^2.160.0",
+    "constructs": "^10.3.0",
+    "esbuild": "^0.24.0",
+    "eslint": "^9.9.0",
+    "eslint-plugin-react-hooks": "^5.1.0-rc.0",
+    "eslint-plugin-react-refresh": "^0.4.9",
+    "globals": "^15.9.0",
+    "husky": "^8.0.0",
+    "lint-staged": "^15.2.10",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.2",
+    "typescript-eslint": "^8.0.1",
+    "vite": "^5.4.1"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "prettier --write",
+      "eslint --cache --fix"
+    ],
+    "*.json": "prettier --write",
+    "*.yml": "prettier --write",
+    "*.md": "prettier --write"
+  }
+}
